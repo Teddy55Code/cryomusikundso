@@ -35,7 +35,6 @@ except Exception:
 toggle_amount_button = None
 selected_mp3 = True
 selected_video = True
-download_video = True
 
 img = ImageTk.PhotoImage(Image.open("resources/Huntergruden.png"))
 
@@ -183,7 +182,7 @@ def toggle_mp3_mp4():
 
 def toggle_video_playlist():
     global selected_video
-    if download_video:
+    if selected_video:
         toggle_amount_button["image"] = right_btn_img
     else:
         toggle_amount_button["image"] = left_btn_img
