@@ -8,6 +8,8 @@ import time
 import tkinter as tk
 import unicodedata
 
+import music_tag
+import requests
 from PIL import Image, ImageTk
 from pydub import AudioSegment
 from pytube import Playlist
@@ -104,8 +106,35 @@ def download_mp3(video, playlist):
             os.makedirs(f"./output/mp3/{playlist}")
 
         given_audio.export(f"./output/mp3/{playlist}/{file_name}.mp3", format="mp3")
+        file_path = f"./output/mp3/{playlist}/{file_name}.mp3"
+
     else:
         given_audio.export(f"./output/mp3/{file_name}.mp3", format="mp3")
+        file_path = f"./output/mp3/{file_name}.mp3"
+
+    res = requests.get(video.thumbnail_url, stream=True)
+
+    with open(f"./temp/{file_name}.png", 'wb') as f:
+        shutil.copyfileobj(res.raw, f)
+
+    music_file = music_tag.load_file(file_path)
+
+    music_file["title"] = video.title
+
+    if playlist:
+        music_file["album"] = playlist
+
+    if video.captions["a.en"]:
+        music_file["lyrics"] = video.captions["a.en"]
+
+        print(video.captions["a.en"])
+        print(music_file["lyrics"])
+
+    music_file["artist"] = video.author
+
+    music_file["artwork"] = open(f"./temp/{file_name}.png", "rb").read()
+
+    music_file.save()
 
     shutil.rmtree("temp")
     os.makedirs("temp")
