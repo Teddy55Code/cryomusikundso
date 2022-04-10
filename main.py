@@ -5,11 +5,11 @@ import shutil
 import threading
 import time
 import tkinter as tk
-
 import music_tag
 import requests
+import ffmpeg
+
 from PIL import Image, ImageTk
-from pydub import AudioSegment
 from pytube import Playlist
 from pytube import YouTube
 
@@ -61,6 +61,13 @@ def loading_animation():
         time.sleep(3)
 
 
+def convert_to_mp3(mkv_file):
+    name, ext = os.path.splitext(mkv_file)
+    out_name = name + ".mp3"
+    ffmpeg.input(mkv_file).output(out_name).run()
+    print("Finished converting {}".format(mkv_file))
+
+
 def handle_download_video(url, playlist=None):
     video = YouTube(url)
 
@@ -79,18 +86,22 @@ def download_mp3(video, playlist):
 
     stream.download(output_path=f"./temp/")
 
-    given_audio = AudioSegment.from_file(f"./temp/{stream.default_filename}", format="mp4")
-
     if playlist:
 
         if not os.path.exists(f"./output/mp3/{playlist}"):
             os.makedirs(f"./output/mp3/{playlist}")
 
-        given_audio.export(f"./output/mp3/{playlist}/{file_name}.mp3", format="mp3")
         file_path = f"./output/mp3/{playlist}/{file_name}.mp3"
 
+        os.system(f"ffmpeg.exe -i \"./temp/{stream.default_filename}\" -vn \"./output/mp3/{playlist}/{file_name}.mp3\" -y")
+
     else:
-        given_audio.export(f"./output/mp3/{file_name}.mp3", format="mp3")
+        if not os.path.exists(f"./output/mp3/{file_name}.mp3"):
+            new_file = open(f"./output/mp3/{file_name}.mp3", "w")
+            new_file.close()
+
+        os.system(f"ffmpeg.exe -i \"./temp/{stream.default_filename}\" -vn \"./output/mp3/{file_name}.mp3\" -y")
+
         file_path = f"./output/mp3/{file_name}.mp3"
 
     res = requests.get(video.thumbnail_url, stream=True)
