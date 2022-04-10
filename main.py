@@ -108,9 +108,6 @@ def download_mp3(video, playlist):
     if video.captions["a.en"]:
         music_file["lyrics"] = video.captions["a.en"]
 
-        print(video.captions["a.en"])
-        print(music_file["lyrics"])
-
     music_file["artist"] = video.author
 
     music_file["artwork"] = open(f"./temp/{file_name}.png", "rb").read()
