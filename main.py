@@ -55,6 +55,10 @@ url_input.pack()
 bottom_uwu_padding_for_input = tk.LabelFrame(canvas, bg="#72D0FF", height=60)
 bottom_uwu_padding_for_input.pack()
 
+def refresh_progress_bar(progress_bar_data):
+    amount_of_stars = round((progress_bar_data['current']/progress_bar_data['total']) * 10)
+    progress_bar_label["text"] = f"({'▓' * amount_of_stars}{'░' * (10 - amount_of_stars)}) {progress_bar_data['current']}/{progress_bar_data['total']}"
+
 
 def loading_animation():
     while not exited:
@@ -150,6 +154,8 @@ def setup_download():
     global exited
     exited = False
 
+    progress_bar_label["text"] = ""
+
     t2 = threading.Thread(target=loading_animation)
     t2.start()
 
@@ -159,8 +165,12 @@ def setup_download():
         playlist = Playlist(url_from_input)
 
         if len(playlist.video_urls) != 0:
+            progress_bar_data = {"total": len(playlist.video_urls), "current": 0}
+            refresh_progress_bar(progress_bar_data)
             for video in playlist.video_urls:
                 handle_download_video(video, playlist.title)
+                progress_bar_data["current"] += 1
+                refresh_progress_bar(progress_bar_data)
             output_name = playlist.title
         else:
             output_name = handle_download_video(url_from_input)
@@ -221,7 +231,10 @@ entry_button.pack()
 output_label = tk.Label(canvas, font=best_font, bg="#72D0FF", fg="pink")
 output_label.pack()
 
-toppadding_for_settings_canvas = tk.LabelFrame(canvas, bg="#72D0FF", height=20)
+progress_bar_label = tk.Label(canvas, font=best_font, bg="#72D0FF", fg="pink")
+progress_bar_label.pack()
+
+toppadding_for_settings_canvas = tk.LabelFrame(canvas, bg="#72D0FF", height=10)
 toppadding_for_settings_canvas.pack()
 
 settings_canvas = tk.Canvas(canvas, bg="#72D0FF", highlightbackground="#72D0FF")
