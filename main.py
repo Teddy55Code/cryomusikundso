@@ -8,6 +8,7 @@ import tkinter as tk
 import music_tag
 import requests
 import ffmpeg
+import subprocess
 
 from PIL import Image, ImageTk
 from pytube import Playlist
@@ -83,6 +84,7 @@ def download_mp3(video, playlist):
     stream = video.streams.get_audio_only()
 
     file_name = stream.default_filename[:-4]
+    path = os.getcwd()
 
     stream.download(output_path=f"./temp/")
 
@@ -93,18 +95,18 @@ def download_mp3(video, playlist):
 
         file_path = f"./output/mp3/{playlist}/{file_name}.mp3"
 
-        os.system(f"ffmpeg.exe -i \"./temp/{stream.default_filename}\" -vn \"./output/mp3/{playlist}/{file_name}.mp3\" -y")
+        subprocess.call(f"ffmpeg.exe -i \"./temp/{stream.default_filename}\" -vn \"./output/mp3/{playlist}/{file_name}.mp3\" -loglevel 0 -y", shell=True)        # os.system(f"ffmpeg.exe -i \"./temp/{stream.default_filename}\" -vn \"./output/mp3/{playlist}/{file_name}.mp3\" -loglevel 0 -y")
 
     else:
         if not os.path.exists(f"./output/mp3/{file_name}.mp3"):
             new_file = open(f"./output/mp3/{file_name}.mp3", "w")
             new_file.close()
-
-        os.system(f"ffmpeg.exe -i \"./temp/{stream.default_filename}\" -vn \"./output/mp3/{file_name}.mp3\" -y")
+        subprocess.call(f"ffmpeg.exe -i \"./temp/{stream.default_filename}\" -vn \"./output/mp3/{file_name}.mp3\" -loglevel 0 -y", shell=True)
 
         file_path = f"./output/mp3/{file_name}.mp3"
 
     res = requests.get(video.thumbnail_url, stream=True)
+
 
     with open(f"./temp/{file_name}.png", 'wb') as f:
         shutil.copyfileobj(res.raw, f)
