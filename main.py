@@ -105,8 +105,10 @@ def download_mp3(video, playlist):
     if playlist:
         music_file["album"] = playlist
 
-    if video.captions["a.en"]:
-        music_file["lyrics"] = video.captions["a.en"]
+    if video.captions:
+        for caption in video.captions:
+            music_file["lyrics"] = caption
+            break
 
     music_file["artist"] = video.author
 
