@@ -2,14 +2,14 @@ import json
 import os
 import random
 import shutil
+import subprocess
 import threading
 import time
 import tkinter as tk
+
+import ffmpeg
 import music_tag
 import requests
-import ffmpeg
-import subprocess
-
 from PIL import Image, ImageTk
 from pytube import Playlist
 from pytube import YouTube
@@ -84,7 +84,6 @@ def download_mp3(video, playlist):
     stream = video.streams.get_audio_only()
 
     file_name = stream.default_filename[:-4]
-    path = os.getcwd()
 
     stream.download(output_path=f"./temp/")
 
@@ -95,7 +94,7 @@ def download_mp3(video, playlist):
 
         file_path = f"./output/mp3/{playlist}/{file_name}.mp3"
 
-        subprocess.call(f"ffmpeg.exe -i \"./temp/{stream.default_filename}\" -vn \"./output/mp3/{playlist}/{file_name}.mp3\" -loglevel 0 -y", shell=True)        # os.system(f"ffmpeg.exe -i \"./temp/{stream.default_filename}\" -vn \"./output/mp3/{playlist}/{file_name}.mp3\" -loglevel 0 -y")
+        subprocess.call(f"ffmpeg.exe -i \"./temp/{stream.default_filename}\" -vn \"./output/mp3/{playlist}/{file_name}.mp3\" -loglevel 0 -y", shell=True)
 
     else:
         if not os.path.exists(f"./output/mp3/{file_name}.mp3"):
@@ -106,7 +105,6 @@ def download_mp3(video, playlist):
         file_path = f"./output/mp3/{file_name}.mp3"
 
     res = requests.get(video.thumbnail_url, stream=True)
-
 
     with open(f"./temp/{file_name}.png", 'wb') as f:
         shutil.copyfileobj(res.raw, f)
@@ -223,14 +221,14 @@ entry_button.pack()
 output_label = tk.Label(canvas, font=best_font, bg="#72D0FF", fg="pink")
 output_label.pack()
 
-toppadding_for_toggle_format_button = tk.LabelFrame(canvas, bg="#72D0FF", height=20)
-toppadding_for_toggle_format_button.pack()
+toppadding_for_settings_canvas = tk.LabelFrame(canvas, bg="#72D0FF", height=20)
+toppadding_for_settings_canvas.pack()
 
 settings_canvas = tk.Canvas(canvas, bg="#72D0FF", highlightbackground="#72D0FF")
 settings_canvas.pack()
 
-fromat_lable = tk.Label(settings_canvas, font=best_font, bg="#72D0FF", fg="pink", text="mp3          mp4")
-fromat_lable.grid(row=0, column=0)
+format_lable = tk.Label(settings_canvas, font=best_font, bg="#72D0FF", fg="pink", text="mp3          mp4")
+format_lable.grid(row=0, column=0)
 
 toggle_format_button = tk.Button(settings_canvas, command=toggle_mp3_mp4, image=left_btn_img)
 toggle_format_button.grid(row=1, column=0)
