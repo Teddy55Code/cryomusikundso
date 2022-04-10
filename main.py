@@ -234,9 +234,6 @@ output_label.pack()
 progress_bar_label = tk.Label(canvas, font=best_font, bg="#72D0FF", fg="pink")
 progress_bar_label.pack()
 
-toppadding_for_settings_canvas = tk.LabelFrame(canvas, bg="#72D0FF", height=10)
-toppadding_for_settings_canvas.pack()
-
 settings_canvas = tk.Canvas(canvas, bg="#72D0FF", highlightbackground="#72D0FF")
 settings_canvas.pack()
 
