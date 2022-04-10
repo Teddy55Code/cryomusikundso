@@ -13,6 +13,7 @@ import requests
 from PIL import Image, ImageTk
 from pytube import Playlist
 from pytube import YouTube
+from pytube import exceptions as pytube_exeptions
 
 from constants import *
 
@@ -74,14 +75,19 @@ def convert_to_mp3(mkv_file):
 
 
 def handle_download_video(url, playlist=None):
-    video = YouTube(url)
+    try:
+        video = YouTube(url)
+    except pytube_exeptions.RegexMatchError:
+        return None, "invalid link"
 
     if selected_mp3:
         file_name = download_mp3(video, playlist)
     else:
         file_name = download_mp4(video, playlist)
 
-    return file_name
+    status = "ok"
+
+    return file_name, status
 
 
 def download_mp3(video, playlist):
@@ -165,18 +171,31 @@ def setup_download():
         playlist = Playlist(url_from_input)
 
         if len(playlist.video_urls) != 0:
+
             progress_bar_data = {"total": len(playlist.video_urls), "current": 0}
             refresh_progress_bar(progress_bar_data)
+
             for video in playlist.video_urls:
-                handle_download_video(video, playlist.title)
+                output_name, status = handle_download_video(video, playlist.title)
+
+                if status != "ok":
+                    exited = True
+                    output_label["text"] = status
+                    return
+
                 progress_bar_data["current"] += 1
                 refresh_progress_bar(progress_bar_data)
             output_name = playlist.title
         else:
-            output_name = handle_download_video(url_from_input)
+            output_name, status = handle_download_video(url_from_input)
 
     else:
-        output_name = handle_download_video(url_from_input)
+        output_name, status = handle_download_video(url_from_input)
+
+    if status != "ok":
+        exited = True
+        output_label["text"] = status
+        return
 
     exited = True
 
