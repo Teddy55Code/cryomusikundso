@@ -167,10 +167,9 @@ def setup_download():
 
     url_from_input = url_input.get()
 
-    if not selected_video:
-        playlist = Playlist(url_from_input)
-
-        if len(playlist.video_urls) != 0:
+    if lever_clicks >= CLICKS_TO_UNLOCK:
+        if "list=" in url_from_input:
+            playlist = Playlist(url_from_input)
 
             progress_bar_data = {"total": len(playlist.video_urls), "current": 0}
             refresh_progress_bar(progress_bar_data)
